@@ -83,6 +83,12 @@
 
 -----------
 
-### Styling the graphs
+### Styling & Improoving the graphs
 
 * Added `options` variable in the chart
+
+* Added a `myChart` for all the common things of a plot
+* Added a `updateChart` function to plot for each data it gets (instead of repeating the same plotting logic for each subject's data)
+* Added buttons for each subject and fucntion which calls the `updateChart` function with respective subject's marks
+
+* Add new test's data button added in UI

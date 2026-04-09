@@ -23,8 +23,18 @@
         {% endfor %}
     </ul>
 
+    <button onclick="showTotal()">Total</button>
+    <button onclick="showPhysics()">Physics</button>
+    <button onclick="showChemistry()">Chemistry</button>
+    <button onclick="showBotany()">Botany</button>
+    <button onclick="showZoology()">Zoology</button>
+
 
     <canvas id="myChart"></canvas>
+
+    <a href="/add">
+        <button>Add New Test</button>
+    </a>
 
     <script>
         const rawData = {{ data | tojson }};
@@ -38,37 +48,46 @@
 
         const ctx = document.getElementById('myChart');
 
-        new Chart(ctx, {
+
+        let myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Total Marks',
-                    data: totals
+                    data: totals,
+                    borderWidth: 2,
+                    tension: 0.3
                 }]
-            },
-
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            },
-
-            datasets: [{
-                label: 'Total Marks',
-                data: totals,
-                borderWidth: 2,
-                tension: 0.3
-            }]
+            }
         });
+
+        
+        function updateChart(label, newData) {
+            myChart.data.datasets[0].label = label;
+            myChart.data.datasets[0].data = newData;
+            myChart.update();
+        }
+
+        function showTotal() {
+            updateChart('Total Marks', totals);
+        }
+
+        function showPhysics() {
+            updateChart('Physics', physics);
+        }
+
+        function showChemistry() {
+            updateChart('Chemistry', chemistry);
+        }
+
+        function showBotany() {
+            updateChart('Botany', botany);
+        }
+
+        function showZoology() {
+            updateChart('Zoology', zoology);
+        }
     </script>
 </body>
 </html>
