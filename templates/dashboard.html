@@ -12,11 +12,11 @@
     <title>Progress Tracker</title>
 </head>
 <body>
-    <button onclick="showTotal()">Total</button>
-    <button onclick="showPhysics()">Physics</button>
-    <button onclick="showChemistry()">Chemistry</button>
-    <button onclick="showBotany()">Botany</button>
-    <button onclick="showZoology()">Zoology</button>
+    <button onclick="showTotal(); setActive(this)">Total</button>
+    <button onclick="showPhysics(); setActive(this)">Physics</button>
+    <button onclick="showChemistry(); setActive(this)">Chemistry</button>
+    <button onclick="showBotany(); setActive(this)">Botany</button>
+    <button onclick="showZoology(); setActive(this)">Zoology</button>
 
 
     <canvas id="myChart"></canvas>

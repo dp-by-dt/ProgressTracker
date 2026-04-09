@@ -105,3 +105,8 @@
 
 * Added a form for `add.html` file
 * Implemented the `add_data()` logic in `app.py`
+
+
+* Made the form fields `required` 
+* Added a number validity check in the backend (`safe_int` and `safe_float`)
+* Added button sytles and button highlight js function

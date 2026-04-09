@@ -1,7 +1,18 @@
 from flask import Flask, render_template, redirect, url_for, request
 import json
 
-app = Flask(__name__) #initialising app
+#------------ initialising app
+app = Flask(__name__) 
+
+
+#---------- helper functions
+def safe_int(value):
+    return int(value) if value else 0
+
+def safe_float(value):
+    return float(value) if value else 0.0
+
+#--------- routes -------
 
 @app.route('/')
 def dashboard():
@@ -18,11 +29,11 @@ def add_data():
         new_entry = {
             "testName": request.form['testName'],
             "testDate": request.form['testDate'],
-            "physics": float(request.form['physics']),
-            "chemistry": float(request.form['chemistry']),
-            "botany": float(request.form['botany']),
-            "zoology": float(request.form['zoology']),
-            "rank": int(request.form['rank'])
+            "physics": safe_float(request.form['physics']),
+            "chemistry": safe_float(request.form['chemistry']),
+            "botany": safe_float(request.form['botany']),
+            "zoology": safe_float(request.form['zoology']),
+            "rank": safe_int(request.form['rank'])
         }
 
         # calculate total + percentage
