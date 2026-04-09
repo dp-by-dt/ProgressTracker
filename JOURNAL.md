@@ -116,3 +116,9 @@
 * The y axis of rank is inverted
 * Added `generateInsight` function to give smarter responses
 * Minor modifications too
+
+
+
+### AI Leverage
+
+* Used Claude to improve UI tremendously

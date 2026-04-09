@@ -1,37 +1,16 @@
 [
     {
-        "testName": "test1",
-        "testDate": "06 April 2026",
-        "physics": 50,
-        "chemistry": 66,
-        "botany": 150,
-        "zoology": 77,
-        "total": 343,
-        "percentage": 47.63,
-        "rank": 72
+        "testName": "LMRP Neet19",
+        "testDate": "2026-03-23",
+        "physics": 5.0,
+        "chemistry": 23.0,
+        "botany": 38.0,
+        "zoology": 57.0,
+        "rank": 149,
+        "total": 123.0,
+        "percentage": 17.08
     },
-    {
-        "testName": "test2",
-        "testDate": "08 April 2026",
-        "physics": 45,
-        "chemistry": 68,
-        "botany": 160,
-        "zoology": 80,
-        "total": 353,
-        "percentage": 49.02,
-        "rank": 60
-    },
-    {
-        "testName": "test3",
-        "testDate": "11 April 2026",
-        "physics": 89.0,
-        "chemistry": 71.0,
-        "botany": 83.0,
-        "zoology": 54.0,
-        "rank": 5,
-        "total": 297.0,
-        "percentage": 41.25
-    },
+
     {
         "testName": "Mock test 4",
         "testDate": "2026-04-06",
