@@ -11,109 +11,75 @@
 
     <title>Progress Tracker</title>
 </head>
+
 <body>
-    <button class="filter-btn" onclick="showTotal(); setActive(this)">Total</button>
+  <div class="app-wrapper">
 
-    <button class="filter-btn" onclick="showPhysics(); setActive(this)">Physics</button>
-    <button class="filter-btn" onclick="showChemistry(); setActive(this)">Chemistry</button>
-    <button class="filter-btn" onclick="showBotany(); setActive(this)">Botany</button>
-    <button class="filter-btn" onclick="showZoology(); setActive(this)">Zoology</button>
+    <!-- Header -->
+    <header class="app-header">
+      <span class="label">NEET Prep</span>
+      <h1>Progress <span>Tracker</span></h1>
+    </header>
 
-    <button class="filter-btn" onclick="showRank(); setActive(this)">Rank</button>
+    <!-- Stats cards -->
+    <div class="stats-grid">
+      <div class="stat-card card-rank">
+        <span class="stat-label">Latest Rank</span>
+        <span class="stat-value" id="stat-rank">—</span>
+        <span class="stat-sub" id="stat-rank-sub">Best: —</span>
+      </div>
+      <div class="stat-card card-score">
+        <span class="stat-label">Latest Score</span>
+        <span class="stat-value" id="stat-score">—</span>
+        <span class="stat-sub" id="stat-score-sub">— %</span>
+      </div>
+      <div class="stat-card card-avg">
+        <span class="stat-label">Avg %</span>
+        <span class="stat-value" id="stat-avg">—</span>
+        <span class="stat-sub" id="stat-avg-sub">—</span>
+      </div>
+    </div>
 
+    <!-- Chart -->
+    <div class="chart-section">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Score Trend</div>
+          <div class="chart-subtitle" id="chart-subtitle">Max 720 marks</div>
+        </div>
+      </div>
 
-    <canvas id="myChart"></canvas>
+      <!-- Filter pills -->
+      <div class="filter-pills">
+        <button class="filter-btn" data-subject="total"><span class="dot"></span>Total</button>
+        <button class="filter-btn" data-subject="physics"><span class="dot"></span>Physics</button>
+        <button class="filter-btn" data-subject="chemistry"><span class="dot"></span>Chemistry</button>
+        <button class="filter-btn" data-subject="botany"><span class="dot"></span>Botany</button>
+        <button class="filter-btn" data-subject="zoology"><span class="dot"></span>Zoology</button>
+        <button class="filter-btn" data-subject="rank"><span class="dot"></span>Rank</button>
+      </div>
 
-    <h3 id="insight"></h3>
+      <canvas id="myChart"></canvas>
+    </div>
 
-    <a href="/add">
-        <button>Add New Test</button>
-    </a>
+    <!-- Insight -->
+    <div class="insight-card" id="insight-card"></div>
 
-    <script>
+  </div>
 
-        
-        const rawData = {{ data | tojson }};
-        
-        document.getElementById("insight").innerText = generateInsight(rawData);
+  <!-- FAB -->
+  <div class="fab-wrap">
+    <span class="fab-label">Add test</span>
+    <a href="/add" class="fab" aria-label="Add new test">＋</a>
+  </div>
 
-        const labels = rawData.map(item => item.testName);
-        const totals = rawData.map(item => item.total);
-
-        const physics = rawData.map(item => item.physics);
-        const chemistry = rawData.map(item => item.chemistry);
-        const botany = rawData.map(item => item.botany);
-        const zoology = rawData.map(item => item.zoology);
-
-        const ranks = rawData.map(item => item.rank);
-
-
-        const ctx = document.getElementById('myChart');
-        let myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Total Marks',
-                    data: totals,
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                },
-                scales: {
-                    y: {
-                        // beginAtZero: false
-                        reverse: false
-                    }
-                }
-            }
-        });
-
-
-        window.onload = () => {
-            showTotal();
-        };
-
-        
-        function updateChart(label, newData, axis_inv=false) {
-            myChart.data.datasets[0].label = label;
-            myChart.data.datasets[0].data = newData;
-            myChart.options.scales.y.reverse = axis_inv;
-            myChart.update();
-        }
-
-        function showTotal() {
-            updateChart('Total Marks', totals);
-        }
-
-        function showPhysics() {
-            updateChart('Physics', physics);
-        }
-
-        function showChemistry() {
-            updateChart('Chemistry', chemistry);
-        }
-
-        function showBotany() {
-            updateChart('Botany', botany);
-        }
-
-        function showZoology() {
-            updateChart('Zoology', zoology);
-        }
-
-        function showRank() {
-            updateChart('Rank', ranks, axis_inv=true);
-        }
-
-    </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+    const rawData = {{ data | tojson }};
+    initDashboard(rawData);
+  </script>
 </body>
+
+
 </html>

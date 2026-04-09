@@ -23,7 +23,7 @@ def safe_float(value):
 
 @app.route('/')
 def dashboard():
-    with open('data.json', 'r') as file:
+    with open(DATA_FILE, 'r') as file:
         data = json.load(file)
 
     return render_template('dashboard.html', data=data)
@@ -62,7 +62,7 @@ def add_data():
         data.append(new_entry)
 
         # save back
-        with open('data.json', 'w') as file:
+        with open(DATA_FILE, 'w') as file:
             json.dump(data, file, indent=4)
 
         return redirect('/')
