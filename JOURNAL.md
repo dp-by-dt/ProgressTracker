@@ -92,3 +92,16 @@
 * Added buttons for each subject and fucntion which calls the `updateChart` function with respective subject's marks
 
 * Add new test's data button added in UI
+
+
+
+* Removed the testing parts from dashboard
+* Corrected style.css and script.js files linking
+* Improved the `myChart` variable
+
+
+
+### Add.html features
+
+* Added a form for `add.html` file
+* Implemented the `add_data()` logic in `app.py`
