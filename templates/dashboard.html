@@ -12,32 +12,43 @@
     <title>Progress Tracker</title>
 </head>
 <body>
-    <button onclick="showTotal(); setActive(this)">Total</button>
-    <button onclick="showPhysics(); setActive(this)">Physics</button>
-    <button onclick="showChemistry(); setActive(this)">Chemistry</button>
-    <button onclick="showBotany(); setActive(this)">Botany</button>
-    <button onclick="showZoology(); setActive(this)">Zoology</button>
+    <button class="filter-btn" onclick="showTotal(); setActive(this)">Total</button>
+
+    <button class="filter-btn" onclick="showPhysics(); setActive(this)">Physics</button>
+    <button class="filter-btn" onclick="showChemistry(); setActive(this)">Chemistry</button>
+    <button class="filter-btn" onclick="showBotany(); setActive(this)">Botany</button>
+    <button class="filter-btn" onclick="showZoology(); setActive(this)">Zoology</button>
+
+    <button class="filter-btn" onclick="showRank(); setActive(this)">Rank</button>
 
 
     <canvas id="myChart"></canvas>
+
+    <h3 id="insight"></h3>
 
     <a href="/add">
         <button>Add New Test</button>
     </a>
 
     <script>
+
+        
         const rawData = {{ data | tojson }};
+        
+        document.getElementById("insight").innerText = generateInsight(rawData);
 
         const labels = rawData.map(item => item.testName);
         const totals = rawData.map(item => item.total);
+
         const physics = rawData.map(item => item.physics);
         const chemistry = rawData.map(item => item.chemistry);
         const botany = rawData.map(item => item.botany);
         const zoology = rawData.map(item => item.zoology);
 
+        const ranks = rawData.map(item => item.rank);
+
+
         const ctx = document.getElementById('myChart');
-
-
         let myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -59,16 +70,23 @@
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        // beginAtZero: false
+                        reverse: false
                     }
                 }
             }
         });
 
+
+        window.onload = () => {
+            showTotal();
+        };
+
         
-        function updateChart(label, newData) {
+        function updateChart(label, newData, axis_inv=false) {
             myChart.data.datasets[0].label = label;
             myChart.data.datasets[0].data = newData;
+            myChart.options.scales.y.reverse = axis_inv;
             myChart.update();
         }
 
@@ -91,6 +109,11 @@
         function showZoology() {
             updateChart('Zoology', zoology);
         }
+
+        function showRank() {
+            updateChart('Rank', ranks, axis_inv=true);
+        }
+
     </script>
 </body>
 </html>

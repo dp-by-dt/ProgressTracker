@@ -1,3 +1,13 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+canvas {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
 button {
     padding: 8px 12px;
     margin: 5px;

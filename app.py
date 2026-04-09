@@ -1,5 +1,12 @@
 from flask import Flask, render_template, redirect, url_for, request
 import json
+import os
+
+
+#------ data file path (dynamic)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(BASE_DIR, 'data.json')
+
 
 #------------ initialising app
 app = Flask(__name__) 
@@ -48,7 +55,7 @@ def add_data():
         new_entry["percentage"] = round((total / 720) * 100, 2)
 
         # load existing data
-        with open('data.json', 'r') as file:
+        with open(DATA_FILE, 'r') as file:
             data = json.load(file)
 
         # append new data
