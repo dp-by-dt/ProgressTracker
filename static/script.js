@@ -5,12 +5,12 @@
 
 /* ── Subject config ─────────────────────────────────────────── */
 const SUBJECTS = {
-  total:     { label: 'Total',     color: '#5b8e7d', max: 720  },
-  physics:   { label: 'Physics',   color: '#6ba3be', max: 180  },
-  chemistry: { label: 'Chemistry', color: '#7dab8a', max: 180  },
-  botany:    { label: 'Botany',    color: '#c4956a', max: 180  },
-  zoology:   { label: 'Zoology',   color: '#b07db8', max: 180  },
-  rank:      { label: 'Rank',      color: '#d97b7b', max: null },
+  total:     { label: 'Total',     color: '#5b8e7d', max: 720,  solo: true  },
+  physics:   { label: 'Physics',   color: '#6ba3be', max: 180,  solo: false },
+  chemistry: { label: 'Chemistry', color: '#7dab8a', max: 180,  solo: false },
+  botany:    { label: 'Botany',    color: '#c4956a', max: 180,  solo: false },
+  zoology:   { label: 'Zoology',   color: '#b07db8', max: 180,  solo: false },
+  rank:      { label: 'Rank',      color: '#d97b7b', max: null, solo: true  },
 };
 
 
@@ -128,63 +128,81 @@ function renderStats(data) {
 
 /* ── Chart ──────────────────────────────────────────────────── */
 let myChart = null;
-let currentSubject = 'total';
+let currentSubject = ['total'];
 
-function buildChart(rawData) {
-  const labels = rawData.map(item => item.testName);
-  const subj   = SUBJECTS[currentSubject];
-  const values = rawData.map(item =>
-    currentSubject === 'rank' ? item.rank : item[currentSubject]
-  );
-
-  const isRank = currentSubject === 'rank';
-  const ctx    = document.getElementById('myChart');
+function buildChart(rawData, activeSubjects) {
+  const isMulti = activeSubjects.length > 1;
+  const isRank  = activeSubjects.length === 1 && activeSubjects[0] === 'rank';
+  const labels  = rawData.map(item => item.testName);
+  const ctx     = document.getElementById('myChart');
   if (!ctx) return;
 
-  const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 260);
-  gradient.addColorStop(0, subj.color + '30');
-  gradient.addColorStop(1, subj.color + '00');
+  const datasets = activeSubjects.map(subject => {
+    const subj  = SUBJECTS[subject];
+    const grd   = ctx.getContext('2d').createLinearGradient(0, 0, 0, 260);
+    grd.addColorStop(0, subj.color + (isMulti ? '18' : '30'));
+    grd.addColorStop(1, subj.color + '00');
+
+    const values = rawData.map(item => {
+      const raw = subject === 'rank' ? item.rank : item[subject];
+      // In multi-subject mode, plot as percentage of subject max
+      if (isMulti && subj.max) return parseFloat(((raw / subj.max) * 100).toFixed(2));
+      return raw;
+    });
+
+    return {
+      label: subj.label,
+      data: values,
+      borderColor: subj.color,
+      backgroundColor: grd,
+      borderWidth: 2.5,
+      pointBackgroundColor: subj.color,
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      tension: 0.35,
+      fill: isMulti ? false : true,  // no fill in multi mode — looks cleaner
+    };
+  });
 
   const config = {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: subj.label,
-        data: values,
-        borderColor: subj.color,
-        backgroundColor: gradient,
-        borderWidth: 2.5,
-        pointBackgroundColor: subj.color,
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        tension: 0.35,
-        fill: true,
-      }]
-    },
+    type: 'line', // radar, bar, pie, line, doughnut
+    data: { labels, datasets },
     options: {
       responsive: true,
       maintainAspectRatio: true,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { display: false },
+        legend: {
+          display: isMulti,
+          labels: {
+            font: { family: 'DM Sans', size: 12 },
+            color: '#5a6360',
+            boxWidth: 10,
+            boxHeight: 10,
+            borderRadius: 5,
+            useBorderRadius: true,
+            padding: 16,
+          }
+        },
         tooltip: {
           backgroundColor: '#1e2420',
           titleColor: '#fff',
           bodyColor: '#9aa5a0',
           cornerRadius: 10,
           padding: 12,
-          displayColors: false,
+          displayColors: isMulti,
           callbacks: {
             title: items => items[0].label,
             label: item => {
-              const val = item.parsed.y;
-              if (currentSubject === 'rank') return `  Rank #${val}`;
-              const max = subj.max;
-              return max
-                ? `  ${val} / ${max}  (${((val / max) * 100).toFixed(1)}%)`
+              const subject = activeSubjects[item.datasetIndex];
+              const subj    = SUBJECTS[subject];
+              const val     = item.parsed.y;
+              if (isRank)  return `  Rank #${val}`;
+              if (isMulti) return `  ${subj.label}: ${val}%`;
+              return subj.max
+                ? `  ${val} / ${subj.max}  (${((val / subj.max) * 100).toFixed(1)}%)`
                 : `  ${val}`;
             }
           }
@@ -194,11 +212,7 @@ function buildChart(rawData) {
         x: {
           grid: { display: false },
           border: { display: false },
-          ticks: {
-            font: { family: 'DM Sans', size: 11 },
-            color: '#9aa5a0',
-            maxRotation: 30,
-          }
+          ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9aa5a0', maxRotation: 30 }
         },
         y: {
           reverse: isRank,
@@ -208,33 +222,29 @@ function buildChart(rawData) {
             font: { family: 'DM Sans', size: 11 },
             color: '#9aa5a0',
             maxTicksLimit: 6,
+            callback: val => isMulti ? val + '%' : val,
           },
-          min: isRank ? undefined : 0,
-          suggestedMax: subj.max ? subj.max : undefined,
+          suggestedMin: isMulti ? -30 : undefined,  // room for negative marks
+          suggestedMax: isMulti ? 100 : (SUBJECTS[activeSubjects[0]]?.max || undefined),
         }
       }
     }
   };
 
-  if (myChart) {
-    myChart.destroy();
-  }
+  if (myChart) myChart.destroy();
   myChart = new Chart(ctx, config);
 }
 
 
-function updateChart(subject, rawData) {
-  currentSubject = subject;
-  buildChart(rawData);
+function updateChart(activeSubjects, rawData) {
+  currentSubject = activeSubjects;   // now an array
+  buildChart(rawData, activeSubjects);
 
-  // Update chart header subtitle
   const sub = document.getElementById('chart-subtitle');
-  if (sub) {
-    const subj = SUBJECTS[subject];
-    sub.textContent = subj.max
-      ? `Max ${subj.max} marks`
-      : 'Lower is better';
-  }
+  if (!sub) return;
+  if (activeSubjects.length > 1)          sub.textContent = 'Shown as % of max — comparable scale';
+  else if (activeSubjects[0] === 'rank')  sub.textContent = 'Lower is better';
+  else sub.textContent = `Max ${SUBJECTS[activeSubjects[0]].max} marks`;
 }
 
 
@@ -244,9 +254,44 @@ function setActive(button) {
   button.classList.add('active');
 }
 
+
+// Track which subjects are active
+let activeSubjects = ['total'];
+
 function handleFilter(subject, btn, rawData) {
-  setActive(btn);
-  updateChart(subject, rawData);
+  const subj     = SUBJECTS[subject];
+  const isSolo   = subj.solo;                          // total / rank
+  const wasActive = btn.classList.contains('active');
+
+  if (isSolo) {
+    // Solo subjects: deselect everything, select only this
+    activeSubjects = [subject];
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    // Multi subjects: toggle this one
+    // But first, if a solo was active, clear it
+    const soloActive = activeSubjects.some(s => SUBJECTS[s].solo);
+    if (soloActive) {
+      activeSubjects = [];
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    if (wasActive && !soloActive) {
+      // Deselect — but keep at least one selected
+      if (activeSubjects.length > 1) {
+        activeSubjects = activeSubjects.filter(s => s !== subject);
+        btn.classList.remove('active');
+      }
+      // If only one left, do nothing (can't deselect the last one)
+    } else {
+      // Select
+      if (!activeSubjects.includes(subject)) activeSubjects.push(subject);
+      btn.classList.add('active');
+    }
+  }
+
+  updateChart(activeSubjects, rawData);
 }
 
 
@@ -316,20 +361,15 @@ function initFormPage() {
 
 /* ── Dashboard init (runs only on / page) ───────────────────── */
 function initDashboard(rawData) {
-  // Render stats cards and insight
   renderStats(rawData);
   renderInsight(rawData);
+  buildChart(rawData, ['total']);
 
-  // Build initial chart
-  buildChart(rawData);
-
-  // Wire up filter buttons
   document.querySelectorAll('.filter-btn').forEach(btn => {
     const subject = btn.dataset.subject;
     btn.addEventListener('click', () => handleFilter(subject, btn, rawData));
   });
 
-  // Activate the "Total" pill by default
   const defaultBtn = document.querySelector('.filter-btn[data-subject="total"]');
   if (defaultBtn) defaultBtn.classList.add('active');
 }

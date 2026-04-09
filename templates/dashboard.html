@@ -59,6 +59,8 @@
         <button class="filter-btn" data-subject="rank"><span class="dot"></span>Rank</button>
       </div>
 
+      <p class="filter-hint" id="filter-hint">Tap multiple subjects to compare</p>
+
       <canvas id="myChart"></canvas>
     </div>
 
@@ -75,10 +77,30 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="{{ url_for('static', filename='script.js') }}"></script>
+
   <script>
     const rawData = {{ data | tojson }};
+
+    // Update hint text whenever filter changes
+    const _origHandleFilter = handleFilter;
+    // (handled inside script.js — just init)
     initDashboard(rawData);
-  </script>
+
+    // Override to also update hint
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+        const hint = document.getElementById('filter-hint');
+        if (!hint) return;
+        if (activeSubjects.length > 1) {
+            hint.textContent = `Comparing ${activeSubjects.length} subjects — tap to deselect`;
+        } else {
+            hint.textContent = 'Tap multiple subjects to compare';
+        }
+        });
+    });
+    </script>
+
+
 </body>
 
 

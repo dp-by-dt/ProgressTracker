@@ -241,6 +241,20 @@ body {
 .filter-btn[data-subject="zoology"]   { --btn-color: var(--zoology); }
 .filter-btn[data-subject="rank"]      { --btn-color: var(--rank); }
 
+
+
+/* Subtle hint text below pills when multi-select is active */
+.filter-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: -10px;
+  margin-bottom: 10px;
+  padding-left: 2px;
+  min-height: 16px;
+  transition: opacity var(--transition);
+}
+
+
 /* ── Canvas ────────────────────────────────────────────────── */
 #myChart {
   width: 100% !important;
