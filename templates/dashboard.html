@@ -12,5 +12,13 @@
     <pre>
         {{ data }}
     </pre>
+
+    <ul>
+        {% for test in data %}
+        <li>
+            {{ test.testName }}: Physics-{{ test.physics }}.... Total-{{ test.total }}
+        </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
