@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="static/style.css">
     <link rel="script" href="static/script.js">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- For loading chat.js-->
+
     <title>Progress Tracker</title>
 </head>
 <body>
@@ -20,5 +22,53 @@
         </li>
         {% endfor %}
     </ul>
+
+
+    <canvas id="myChart"></canvas>
+
+    <script>
+        const rawData = {{ data | tojson }};
+
+        const labels = rawData.map(item => item.testName);
+        const totals = rawData.map(item => item.total);
+        const physics = rawData.map(item => item.physics);
+        const chemistry = rawData.map(item => item.chemistry);
+        const botany = rawData.map(item => item.botany);
+        const zoology = rawData.map(item => item.zoology);
+
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Marks',
+                    data: totals
+                }]
+            },
+
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            },
+
+            datasets: [{
+                label: 'Total Marks',
+                data: totals,
+                borderWidth: 2,
+                tension: 0.3
+            }]
+        });
+    </script>
 </body>
 </html>

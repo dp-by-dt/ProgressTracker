@@ -1,4 +1,7 @@
 ## Taks done:
+
+### Prelim Setups
+
 * Created the folder structure
     progress_tracker/
     │
@@ -32,6 +35,9 @@
     git remote add origin <url>
     git push -u origin master 
 
+-----------
+
+### Testing the basic working
 
 * And tested if the data from the .json file is loaded correctly using:
 
@@ -50,3 +56,33 @@
 -- Now the flow is, `data.json`'s data is taken by the `app.py` file route and then passed to `dashboard.html` as data. It process it and displays
 
 
+* Tried to plot the loaded values using chat.js as follows (inside the dashboard.html):
+
+    <canvas id="myChart"></canvas>
+
+    <script>
+        const rawData = {{ data | tojson }};
+
+        const labels = rawData.map(item => item.testName);
+        const totals = rawData.map(item => item.total);
+
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Marks',
+                    data: totals
+                }]
+            }
+        });
+    </script>
+
+
+-----------
+
+### Styling the graphs
+
+* Added `options` variable in the chart
